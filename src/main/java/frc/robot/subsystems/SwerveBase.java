@@ -34,14 +34,14 @@ public class SwerveBase extends SubsystemBase {
 
     public SwerveBase() {
         swerveMods = new RevSwerveModule[]{
-            new RevSwerveModule(0, Constants.Swerve.Modules.Mod0.constants),
-            new RevSwerveModule(1, Constants.Swerve.Modules.Mod1.constants),
-            new RevSwerveModule(2, Constants.Swerve.Modules.Mod2.constants),
-            new RevSwerveModule(3, Constants.Swerve.Modules.Mod3.constants)
+            new RevSwerveModule(0, Constants.Swerve.Mod0.kConstants),
+            new RevSwerveModule(1, Constants.Swerve.Mod1.kConstants),
+            new RevSwerveModule(2, Constants.Swerve.Mod2.kConstants),
+            new RevSwerveModule(3, Constants.Swerve.Mod3.kConstants)
         };
 
         swerveOdometer = new SwerveDrivePoseEstimator(
-            Constants.Swerve.swerveKinematics, 
+            Constants.Swerve.kSwerveKinematics, 
             getYaw(), 
             getModulePositions(), 
             new Pose2d()
@@ -55,13 +55,13 @@ public class SwerveBase extends SubsystemBase {
             e.printStackTrace();
         }
 
-        // --- CONFIGURACIÓN CON EL FIX DE ROTACIÓN ---
+   
         AutoBuilder.configure(
             this::getPose,                
             this::resetOdometry,          
             this::getRobotRelativeSpeeds, 
             
-            // AQUÍ ESTÁ LA CORRECCIÓN:
+    
             (speeds, feedforwards) -> {
                 ChassisSpeeds fixedSpeeds = new ChassisSpeeds(
                     speeds.vxMetersPerSecond,
@@ -107,8 +107,8 @@ public class SwerveBase extends SubsystemBase {
 
         desiredChassisSpeeds = correctForDynamics(desiredChassisSpeeds);
         
-        SwerveModuleState[] swerveModuleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(desiredChassisSpeeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
+        SwerveModuleState[] swerveModuleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(desiredChassisSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.kMaxSpeed);
         
         for (SwerveModule mod : swerveMods) {
             mod.setDesiredState(swerveModuleStates[mod.getModuleNumber()], isOpenLoop);
@@ -116,19 +116,19 @@ public class SwerveBase extends SubsystemBase {
     }
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
-        SwerveModuleState[] moduleStates = Constants.Swerve.swerveKinematics.toSwerveModuleStates(speeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Constants.Swerve.maxSpeed);
+        SwerveModuleState[] moduleStates = Constants.Swerve.kSwerveKinematics.toSwerveModuleStates(speeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Constants.Swerve.kMaxSpeed);
         setModuleStates(moduleStates);
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.maxSpeed);
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.kMaxSpeed);
         for (SwerveModule mod : swerveMods) {
             mod.setDesiredState(desiredStates[mod.getModuleNumber()], false);
         }
     }
 
-    // --- ODOMETRÍA Y SENSORES ---
+
 
     public Pose2d getPose() {
         return swerveOdometer.getEstimatedPosition();
@@ -155,7 +155,7 @@ public class SwerveBase extends SubsystemBase {
     }
 
     public ChassisSpeeds getRobotRelativeSpeeds() {
-        return Constants.Swerve.swerveKinematics.toChassisSpeeds(getModuleStates());
+        return Constants.Swerve.kSwerveKinematics.toChassisSpeeds(getModuleStates());
     }
 
     public void zeroGyro() {
@@ -163,7 +163,7 @@ public class SwerveBase extends SubsystemBase {
     }
 
     public Rotation2d getYaw() {
-        return (Constants.Swerve.invertGyro) ? Rotation2d.fromDegrees(360).minus(gyro.getRotation2d()) : gyro.getRotation2d();
+        return (Constants.Swerve.kInvertGyro) ? Rotation2d.fromDegrees(360).minus(gyro.getRotation2d()) : gyro.getRotation2d();
     }
 
     public double getPitch() {

@@ -47,9 +47,9 @@ public class TeleopSwerve extends Command {
     public void execute() {
 
         // 1. Leer valores de joystick con deadband
-        double xRaw = MathUtil.applyDeadband(translationX.getAsDouble(), Constants.stickDeadband);
-        double yRaw = MathUtil.applyDeadband(translationY.getAsDouble(), Constants.stickDeadband);
-        double rotationVal = MathUtil.applyDeadband(rotation.getAsDouble(), Constants.stickDeadband);
+        double xRaw = MathUtil.applyDeadband(translationX.getAsDouble(), Constants.OIConstants.kStickDeadband);
+        double yRaw = MathUtil.applyDeadband(translationY.getAsDouble(), Constants.OIConstants.kStickDeadband);
+        double rotationVal = MathUtil.applyDeadband(rotation.getAsDouble(), Constants.OIConstants.kStickDeadband);
 
         // 2. APLICAR EL FILTRO (Capacitor Digital)
         double xFiltered = xLimiter.calculate(xRaw);
@@ -59,8 +59,8 @@ public class TeleopSwerve extends Command {
         boolean speedCutoffVal = turbo.getAsDouble() <= 0.1;
         
         // Leer valores de joystick con deadband
-        double translationVal = MathUtil.applyDeadband(translationX.getAsDouble(), Constants.stickDeadband);
-        double strafeVal = MathUtil.applyDeadband(translationY.getAsDouble(), Constants.stickDeadband);
+        double translationVal = MathUtil.applyDeadband(translationX.getAsDouble(), Constants.OIConstants.kStickDeadband);
+        double strafeVal = MathUtil.applyDeadband(translationY.getAsDouble(), Constants.OIConstants.kStickDeadband);
         
 
        
@@ -80,9 +80,9 @@ public class TeleopSwerve extends Command {
 
         s_Swerve.drive(
             new Translation2d(xFiltered, yFiltered)
-                    .times(Constants.Swerve.maxSpeed)
+                    .times(Constants.Swerve.kMaxSpeed)
                     .times(speedCutoffVal ? 1 : 0.5),
-            rotationVal * Constants.Swerve.maxAngularVelocity * (speedCutoffVal ? 0.5 : 1),
+            rotationVal * Constants.Swerve.kMaxAngularVelocity * (speedCutoffVal ? 0.5 : 1),
             !robotCentric,
             true
         );

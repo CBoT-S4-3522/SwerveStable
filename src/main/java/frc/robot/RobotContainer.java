@@ -19,7 +19,7 @@ public class RobotContainer {
     public static ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
 
     /* Controllers */
-    private final Joystick driver1 = new Joystick(0);
+    private final Joystick driver1 = new Joystick(Constants.OIConstants.kDriver1Port);
 
     /* Subsystems */
     private final SwerveBase s_Swerve;

@@ -67,12 +67,12 @@ public class RevSwerveModule implements SwerveModule {
         relDriveEncoder.setPosition(0);
 
         // Factores de conversión
-        mDriveConfig.encoder.positionConversionFactor(Constants.Swerve.driveRevToMeters);
-        mDriveConfig.encoder.velocityConversionFactor(Constants.Swerve.driveRpmToMetersPerSecond);
+        mDriveConfig.encoder.positionConversionFactor(Constants.Swerve.kDriveRevToMeters);
+        mDriveConfig.encoder.velocityConversionFactor(Constants.Swerve.kDriveRpmToMetersPerSecond);
 
         relAngleEncoder = mAngleMotor.getEncoder();
-        mAngleConfig.encoder.positionConversionFactor(Constants.Swerve.DegreesPerTurnRotation);
-        mAngleConfig.encoder.velocityConversionFactor(Constants.Swerve.DegreesPerTurnRotation / 60);
+        mAngleConfig.encoder.positionConversionFactor(Constants.Swerve.kDegreesPerTurnRotation);
+        mAngleConfig.encoder.velocityConversionFactor(Constants.Swerve.kDegreesPerTurnRotation / 60);
 
         
         mDriveMotor.configure(mDriveConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -80,35 +80,37 @@ public class RevSwerveModule implements SwerveModule {
     }
 
     private void configAngleMotor() {
-        mAngleConfig.closedLoop.p(Constants.Swerve.angleKP, ClosedLoopSlot.kSlot0);
-        mAngleConfig.closedLoop.i(Constants.Swerve.angleKI, ClosedLoopSlot.kSlot0);
-        mAngleConfig.closedLoop.d(Constants.Swerve.angleKD, ClosedLoopSlot.kSlot0);
-        mAngleConfig.closedLoop.feedForward.kS(Constants.Swerve.angleKS, ClosedLoopSlot.kSlot0);
-        mAngleConfig.closedLoop.feedForward.kV(Constants.Swerve.angleKV, ClosedLoopSlot.kSlot0);
-        mAngleConfig.closedLoop.feedForward.kA(Constants.Swerve.angleKA, ClosedLoopSlot.kSlot0);
-        mAngleConfig.closedLoop.outputRange(-Constants.Swerve.anglePower, Constants.Swerve.anglePower);
+        mAngleConfig.closedLoop.p(Constants.Swerve.Angle.kP, ClosedLoopSlot.kSlot0);
+        mAngleConfig.closedLoop.i(Constants.Swerve.Angle.kI, ClosedLoopSlot.kSlot0);
+        mAngleConfig.closedLoop.d(Constants.Swerve.Angle.kD, ClosedLoopSlot.kSlot0);
+        mAngleConfig.closedLoop.feedForward.kS(Constants.Swerve.Angle.kS, ClosedLoopSlot.kSlot0);
+        mAngleConfig.closedLoop.feedForward.kV(Constants.Swerve.Angle.kV, ClosedLoopSlot.kSlot0);
+        mAngleConfig.closedLoop.feedForward.kA(Constants.Swerve.Angle.kA, ClosedLoopSlot.kSlot0);
+        mAngleConfig.closedLoop.outputRange(-Constants.Swerve.kAnglePower, Constants.Swerve.kAnglePower);
         
         // CORRECCION: Usar el límite de corriente de ANGLE, no de DRIVE
-        mAngleConfig.smartCurrentLimit(Constants.Swerve.angleContinuousCurrentLimit);
+        mAngleConfig.smartCurrentLimit(Constants.Swerve.kAngleContinuousCurrentLimit);
 
-        mAngleConfig.inverted(Constants.Swerve.angleMotorInvert);
-        mAngleConfig.idleMode(Constants.Swerve.angleIdleMode);
-        mAngleConfig.closedLoopRampRate(Constants.Swerve.angleRampRate);
+        mAngleConfig.inverted(Constants.Swerve.kAngleMotorInvert);
+        mAngleConfig.idleMode(Constants.Swerve.kAngleIdleMode);
+        mAngleConfig.closedLoopRampRate(Constants.Swerve.kAngleRampRate);
     }
 
     private void configDriveMotor() {
         // Aseguramos usar las constantes de DRIVE (KP, KI, KD)
-        mDriveConfig.closedLoop.p(Constants.Swerve.driveKP, ClosedLoopSlot.kSlot0);
-        mDriveConfig.closedLoop.i(Constants.Swerve.driveKI, ClosedLoopSlot.kSlot0);
-        mDriveConfig.closedLoop.d(Constants.Swerve.driveKD, ClosedLoopSlot.kSlot0);
-        mDriveConfig.closedLoop.feedForward.kA(Constants.Swerve.driveKA, ClosedLoopSlot.kSlot0);
+        mDriveConfig.closedLoop.p(Constants.Swerve.Drive.kP, ClosedLoopSlot.kSlot0);
+        mDriveConfig.closedLoop.i(Constants.Swerve.Drive.kI, ClosedLoopSlot.kSlot0);
+        mDriveConfig.closedLoop.d(Constants.Swerve.Drive.kD, ClosedLoopSlot.kSlot0);
+        mDriveConfig.closedLoop.feedForward.kA(Constants.Swerve.Drive.kA, ClosedLoopSlot.kSlot0);
+        mDriveConfig.closedLoop.feedForward.kV(Constants.Swerve.Drive.kV, ClosedLoopSlot.kSlot0);
+        mDriveConfig.closedLoop.feedForward.kS(Constants.Swerve.Drive.kS,  ClosedLoopSlot.kSlot0);
         
         
         mDriveConfig.closedLoop.outputRange(-1, 1); 
-        mDriveConfig.smartCurrentLimit(Constants.Swerve.driveContinuousCurrentLimit);
-    
-        mDriveConfig.inverted(Constants.Swerve.driveMotorInvert);
-        mDriveConfig.idleMode(Constants.Swerve.driveIdleMode);
+        mDriveConfig.smartCurrentLimit(Constants.Swerve.kDriveContinuousCurrentLimit);
+
+        mDriveConfig.inverted(Constants.Swerve.kDriveMotorInvert);
+        mDriveConfig.idleMode(Constants.Swerve.kDriveIdleMode);
     }
 
     @Override // Implementando de la interfaz
@@ -121,7 +123,7 @@ public class RevSwerveModule implements SwerveModule {
 
     private void setSpeed(SwerveModuleState desiredState, boolean isOpenLoop) {
         if (isOpenLoop) {
-            double percentOutput = desiredState.speedMetersPerSecond / Constants.Swerve.maxSpeed;
+            double percentOutput = desiredState.speedMetersPerSecond / Constants.Swerve.kMaxSpeed;
             mDriveMotor.set(percentOutput);
             return;
         }
@@ -133,7 +135,7 @@ public class RevSwerveModule implements SwerveModule {
 
     private void setAngle(SwerveModuleState desiredState) {
         // Prevenir Jitter: Si la velocidad es muy baja, no muevas el ángulo
-        if (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.maxSpeed * 0.01)) {
+        if (Math.abs(desiredState.speedMetersPerSecond) <= (Constants.Swerve.kMaxSpeed * 0.01)) {
             mAngleMotor.stopMotor();
             return;
         }
