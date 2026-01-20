@@ -13,6 +13,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import static edu.wpi.first.units.Units.*;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import static edu.wpi.first.units.Units.*; // Importante para usar Volts, Meters, etc.
+import edu.wpi.first.wpilibj2.command.Command;
+// import edu.wpi.first.units.measure.;
 
 // Importaciones de PathPlanner
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -32,7 +39,11 @@ public class SwerveBase extends SubsystemBase {
     private final Field2d field = new Field2d();
     private RobotConfig config;
 
+    
+
     public SwerveBase() {
+
+        
         swerveMods = new RevSwerveModule[]{
             new RevSwerveModule(0, Constants.Swerve.Mod0.kConstants),
             new RevSwerveModule(1, Constants.Swerve.Mod1.kConstants),
@@ -85,7 +96,37 @@ public class SwerveBase extends SubsystemBase {
             },
             this 
         );
+        
     }
+
+    private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
+    new SysIdRoutine.Config(),
+    new SysIdRoutine.Mechanism(
+        (voltage) -> { // 'voltage' aquí es un objeto de tipo Voltage
+            for (SwerveModule mod : swerveMods) {
+                mod.setDriveVoltage(voltage.in(Volts)); // Convertimos el objeto a número (double)
+                mod.lockAngle();
+            }
+        },
+        log -> {
+            for (SwerveModule mod : swerveMods) {
+                log.motor("drive-" + mod.getModuleNumber())
+                   .voltage(Volts.of(mod.getDriveVoltage())) // Creamos la medida a partir del número
+                   .linearPosition(Meters.of(mod.getPosition().distanceMeters))
+                   .linearVelocity(MetersPerSecond.of(mod.getState().speedMetersPerSecond));
+            }
+        },
+        this
+    )
+);
+// Métodos para exponer los comandos
+public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.quasistatic(direction);
+}
+
+public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.dynamic(direction);
+}
 
     // Método principal para Teleoperado
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -202,8 +243,25 @@ public class SwerveBase extends SubsystemBase {
     }
 
     @Override
-    public void periodic() {
-        SmartDashboard.putNumber("gyro", getYaw().getDegrees()); 
+    public void periodic() { 
+        // Actualización de odometría (esto ya lo tienes)
+        swerveOdometer.update(getYaw(), getModulePositions());
+
+
+    
+    // 1. Log de la posición 2D del robot (Pose2d)
+    Logger.recordOutput("Odometry/RobotPose", swerveOdometer.getEstimatedPosition());
+
+    // 2. Log de los estados de los módulos (Real vs Deseado)
+    // Esto enviará un arreglo que AdvantageScope puede dibujar en 3D
+    Logger.recordOutput("Swerve/ModuleStates/Real", getModuleStates());
+    
+    // Necesitamos obtener los estados deseados de todos los módulos
+    SwerveModuleState[] desiredStates = new SwerveModuleState[4];
+    for (SwerveModule mod : swerveMods) {
+        desiredStates[mod.getModuleNumber()] = mod.getDesiredState();
+    }
+    Logger.recordOutput("Swerve/ModuleStates/Desired", desiredStates);
         
         swerveOdometer.update(getYaw(), getModulePositions());
         

@@ -199,4 +199,22 @@ public class RevSwerveModule implements SwerveModule {
     public SwerveModuleState getDesiredState() {
         return desiredState;
     }
+    // Dentro de RevSwerveModule.java
+    public void setDriveVoltage(double volts) {
+        mDriveMotor.setVoltage(volts);
+    }
+    
+
+    @Override
+public double getDriveVoltage() {
+    // El voltaje aplicado es el voltaje de la batería por el porcentaje de salida
+    return mDriveMotor.getBusVoltage() * mDriveMotor.getAppliedOutput();
+}
+
+    @Override
+    public void lockAngle() {
+    // Forzamos a que el módulo siempre mire hacia adelante (0 grados)
+    mAngleMotor.getClosedLoopController().setSetpoint(0, com.revrobotics.spark.SparkBase.ControlType.kPosition);
+    }
+
 }

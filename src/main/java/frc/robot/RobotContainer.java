@@ -11,8 +11,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.TeleopSwerve;
 import frc.robot.subsystems.SwerveBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import edu.wpi.first.wpilibj.RobotBase; // Para la condición if (RobotBase.isReal())
 
 public class RobotContainer {
     /*  Shuffleboard */
@@ -56,6 +59,13 @@ public class RobotContainer {
             )
         );
 
+        // En RobotContainer.java, dentro del constructor public RobotContainer()
+
+// Agregamos botones a la SmartDashboard para las pruebas de SysId
+    SmartDashboard.putData("Calibracion/Quasistatic Forward", s_Swerve.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    SmartDashboard.putData("Calibracion/Quasistatic Reverse", s_Swerve.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    SmartDashboard.putData("Calibracion/Dynamic Forward", s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    SmartDashboard.putData("Calibracion/Dynamic Reverse", s_Swerve.sysIdDynamic(SysIdRoutine.Direction.kReverse));
     // Configure the button bindings
         configureButtonBindings();
     }

@@ -24,4 +24,10 @@ public interface SwerveModule {
     public double getOmega();
 
     public Rotation2d getAngle(); 
+
+    public void setDriveVoltage(double volts);
+    
+    public double getDriveVoltage();
+    
+    public void lockAngle();
 }
