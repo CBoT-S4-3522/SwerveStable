@@ -2,17 +2,17 @@ package frc.robot;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // 1. Añade estas importaciones arriba
+import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 
-public class Robot extends TimedRobot {
+public class Robot extends  LoggedRobot{
   private Command m_autonomousCommand;
   RobotContainer m_robotContainer;
 
@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
     // ¡ESTA ES LA LÍNEA MÁGICA! Sin esto no se guarda nada
     Logger.start(); 
 
-    m_robotContainer = new RobotContainer();
+ 
 
     m_robotContainer = new RobotContainer();
     

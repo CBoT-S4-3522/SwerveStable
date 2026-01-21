@@ -16,8 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import static edu.wpi.first.units.Units.*;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import static edu.wpi.first.units.Units.*; // Importante para usar Volts, Meters, etc.
+
 import edu.wpi.first.wpilibj2.command.Command;
 // import edu.wpi.first.units.measure.;
 
@@ -43,10 +42,9 @@ public class SwerveBase extends SubsystemBase {
 
     public SwerveBase() {
 
-        // Agregar valor a elastic de SysId en SmartDashboard
-        SmartDashboard.putNumber("SysId/Timeout Segundos", 2.0); // Valor inicial de 2 segundos
+        SmartDashboard.putNumber("SysId/Tiempo Quasistatic", 7.0); // Necesita más tiempo
+        SmartDashboard.putNumber("SysId/Tiempo Dynamic", 1.5);    // Necesita poco tiempo
 
-        
         swerveMods = new RevSwerveModule[]{
             new RevSwerveModule(0, Constants.Swerve.Mod0.kConstants),
             new RevSwerveModule(1, Constants.Swerve.Mod1.kConstants),
@@ -219,7 +217,7 @@ public class SwerveBase extends SubsystemBase {
     }
 
     private final SysIdRoutine m_sysIdRoutine = new SysIdRoutine(
-    new SysIdRoutine.Config(null, null, Seconds.of(2.0), null),
+    new SysIdRoutine.Config(null, null, Seconds.of(30.0), null),
     new SysIdRoutine.Mechanism(
         (voltage) -> { // 'voltage' aquí es un objeto de tipo Voltage
             for (SwerveModule mod : swerveMods) {
@@ -238,16 +236,15 @@ public class SwerveBase extends SubsystemBase {
         this
     )
 );
-// Modifica estos métodos en SwerveBase.java
-public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    double seconds = SmartDashboard.getNumber("SysId/Timeout Segundos", 2.0);
-    return m_sysIdRoutine.quasistatic(direction).withTimeout(Seconds.of(seconds));
-}
+    public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
+        return m_sysIdRoutine.quasistatic(direction)
+            .withTimeout(Seconds.of(SmartDashboard.getNumber("SysId/Tiempo Quasistatic", 7.0)));
+    }
 
-public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    double seconds = SmartDashboard.getNumber("SysId/Timeout Segundos", 2.0);
-    return m_sysIdRoutine.dynamic(direction).withTimeout(Seconds.of(seconds));
-}
+    public Command sysIdDynamic(SysIdRoutine.Direction direction) {
+    return m_sysIdRoutine.dynamic(direction)
+        .withTimeout(Seconds.of(SmartDashboard.getNumber("SysId/Tiempo Dynamic", 1.5)));
+    }
 
     @Override
     public void periodic() { 
