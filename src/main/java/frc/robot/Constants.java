@@ -99,16 +99,16 @@ public final class Constants {
 
 		public static final class Drive {
 		/* Drive Motor PID Values */
-		public static final double kP = 0.23968;
-		public static final double kI = 0.0;
-		public static final double kD = 0.00;
+			public static final double kP = 0.22019;
+			public static final double kI = 0.0;
+			public static final double kD = 0.00;
 		// private static final double K_F_FACTOR = 0.5;
 		// public static final double DRIVE_KFF = (1 / K_DRIVE_WHEEL_FREE_SPEED_RPS) * K_F_FACTOR;
 
 		/* Drive motor FeedForward Values */
-		public static final double kS = 0.21583; // Voltios para empezar a mover
-		public static final double kV = 2.5355; // Voltios por metro/segundo
-		public static final double kA = 0.23016; // Voltios por metro/segundo^2
+			public static final double kS = 0.19127; // Voltios para empezar a mover
+			public static final double kV = 2.6058; // Voltios por metro/segundo
+			public static final double kA = 0.21793; // Voltios por metro/segundo^2
 
 		}
 		/** Meters per Second */
@@ -126,7 +126,7 @@ public final class Constants {
 				public static final int kDriveMotorId = 11;
 				public static final int kAngleMotorId = 12;
 				public static final int kCanCoderId = 13;
-				public static final Rotation2d kAngleOffset = Rotation2d.fromDegrees(11.52);
+				public static final Rotation2d kAngleOffset = Rotation2d.fromDegrees(11.52); //11.52
 				public static final RevSwerveModuleConstants kConstants = new RevSwerveModuleConstants(kDriveMotorId,
 						kAngleMotorId, kCanCoderId, kAngleOffset);
 			}
